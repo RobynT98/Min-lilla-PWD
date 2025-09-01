@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Min lilla PWA</title>
+  <meta name="theme-color" content="#7c3aed" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <style>
+    body { font-family: sans-serif; margin: 0; }
+    header { padding: 2rem; background: linear-gradient(135deg,#7c3aed,#0ea5e9); color: white; }
+    main { padding: 1.25rem; }
+    button { padding: .75rem 1rem; border-radius: .75rem; border: 0; font-weight: bold; }
+    .install { background: #7c3aed; color: white; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🚀 Min lilla PWA</h1>
+    <p>Installera mig som app, även offline.</p>
+  </header>
+  <main>
+    <p>Detta är en minimal Progressive Web App (PWA). Prova att installera den!</p>
+    <button id="installBtn" class="install" hidden>Installera appen</button>
+    <p id="status"></p>
+  </main>
+
+  <script>
+    // Registrera service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+
+    // Installationsknapp
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    const statusEl = document.getElementById('status');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.hidden = false;
+    });
+
+    installBtn.addEventListener('click', async () => {
+      installBtn.hidden = true;
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      statusEl.textContent = outcome === 'accepted' ? 'Installerad 🎉' : 'Installation avbröts.';
+      deferredPrompt = null;
+    });
+
+    window.addEventListener('appinstalled', () => {
+      statusEl.textContent = 'Appen är installerad 🎉';
+    });
+  </script>
+</body>
+</html>
