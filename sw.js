@@ -1,5 +1,5 @@
 // Enkel cache-first service worker
-const CACHE_NAME = 'pwa-demo-v1';
+const CACHE_NAME = 'Min-Lilla-PWD-v2';
 const ASSETS = [
   './',
   './index.html',
